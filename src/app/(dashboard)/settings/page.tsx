@@ -1,10 +1,14 @@
 import { PageHeader } from '@/components/layout/page-header';
+import { SettingsForm } from '@/components/forms/settings-form';
 
 export default function SettingsPage() {
   return (
-    <PageHeader
-      title="Settings"
-      description="Configure your retirement goals and manage accounts. Coming in Milestone 2."
-    />
+    <div className="space-y-6">
+      <PageHeader
+        title="Settings"
+        description="Configure your retirement goals."
+      />
+      <SettingsForm />
+    </div>
   );
 }

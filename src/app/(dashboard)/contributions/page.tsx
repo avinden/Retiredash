@@ -1,10 +1,20 @@
-import { PageHeader } from '@/components/layout/page-header';
+export const dynamic = 'force-dynamic';
 
-export default function ContributionsPage() {
+import { PageHeader } from '@/components/layout/page-header';
+import { ContributionsView } from '@/components/charts/contributions-view';
+import { DEFAULT_USER_ID } from '@/lib/constants';
+import { getAllSnapshots } from '@/lib/db/queries/snapshots';
+
+export default async function ContributionsPage() {
+  const snapshots = await getAllSnapshots(DEFAULT_USER_ID);
+
   return (
-    <PageHeader
-      title="Contributions vs. Performance"
-      description="See how your savings and investment gains compare. Coming in Milestone 3."
-    />
+    <div className="space-y-6">
+      <PageHeader
+        title="Contributions vs. Performance"
+        description="See how your savings and investment gains compare."
+      />
+      <ContributionsView snapshots={snapshots} />
+    </div>
   );
 }
