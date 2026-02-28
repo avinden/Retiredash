@@ -1,0 +1,63 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  BarChart3,
+  Home,
+  PiggyBank,
+  Settings,
+  TrendingUp,
+} from 'lucide-react';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from '@/components/ui/sidebar';
+
+const navItems = [
+  { title: 'Dashboard', href: '/', icon: Home },
+  { title: 'Net Worth', href: '/net-worth', icon: TrendingUp },
+  { title: 'Contributions', href: '/contributions', icon: BarChart3 },
+  { title: 'Settings', href: '/settings', icon: Settings },
+];
+
+export function AppSidebar() {
+  const pathname = usePathname();
+
+  return (
+    <Sidebar>
+      <SidebarHeader className="px-4 py-4">
+        <Link href="/" className="flex items-center gap-2">
+          <PiggyBank className="h-6 w-6 text-primary" />
+          <span className="text-lg font-semibold">RetireView</span>
+        </Link>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton asChild isActive={pathname === item.href}>
+                    <Link href={item.href}>
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+}
