@@ -33,11 +33,22 @@ export function ContributionsChart({ data }: ContributionsChartProps) {
         data={data}
         margin={{ top: 5, right: 20, bottom: 5, left: 10 }}
       >
-        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-        <XAxis dataKey="period" tick={{ fontSize: 12 }} />
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke="var(--color-border)"
+          strokeOpacity={0.5}
+        />
+        <XAxis
+          dataKey="period"
+          tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
+          axisLine={{ stroke: 'var(--color-border)' }}
+          tickLine={false}
+        />
         <YAxis
-          tick={{ fontSize: 12 }}
-          tickFormatter={(v: number) => formatCompact(v)}
+          tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
+          tickFormatter={formatCompact}
+          axisLine={false}
+          tickLine={false}
         />
         <Tooltip
           formatter={(
@@ -45,28 +56,47 @@ export function ContributionsChart({ data }: ContributionsChartProps) {
             name: string | undefined,
           ) => [
             formatCurrency(value ?? 0),
-            name === 'totalContributions' ? 'Contributions' : 'Gains',
+            name === 'totalContributions'
+              ? 'Contributions'
+              : name === 'totalGains'
+                ? 'Gains'
+                : 'Net Total',
           ]}
+          contentStyle={{
+            background: 'var(--color-card)',
+            border: '1px solid var(--color-border)',
+            borderRadius: '0.5rem',
+            fontSize: '0.8125rem',
+          }}
         />
         <Legend
           formatter={(value: string) =>
-            value === 'totalContributions' ? 'Contributions' : 'Gains'
+            value === 'totalContributions'
+              ? 'Contributions'
+              : value === 'totalGains'
+                ? 'Gains'
+                : 'Net Total'
           }
+          wrapperStyle={{ fontSize: '0.75rem' }}
         />
         <Bar
           dataKey="totalContributions"
           stackId="a"
           fill="var(--color-chart-2)"
+          radius={[0, 0, 0, 0]}
+          opacity={0.85}
         />
         <Bar
           dataKey="totalGains"
           stackId="a"
           fill="var(--color-chart-1)"
+          radius={[4, 4, 0, 0]}
+          opacity={0.85}
         />
         <Line
           type="monotone"
           dataKey="totalBalance"
-          stroke="var(--color-primary)"
+          stroke="var(--color-gold)"
           strokeWidth={2}
           dot={false}
           name="Net Total"

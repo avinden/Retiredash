@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { NetWorthChart } from './net-worth-chart';
 import { NetWorthStats } from './net-worth-stats';
 import { PeriodToggle } from './period-toggle';
@@ -24,15 +23,15 @@ export function NetWorthView({ snapshots }: NetWorthViewProps) {
   return (
     <div className="space-y-6">
       <NetWorthStats data={data} />
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Net Worth Over Time</CardTitle>
+      <div className="animate-fade-up delay-3 rounded-xl border border-border bg-card p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="font-display text-lg text-foreground">
+            Net Worth Over Time
+          </h3>
           <PeriodToggle value={period} onChange={setPeriod} />
-        </CardHeader>
-        <CardContent>
-          <NetWorthChart data={data} />
-        </CardContent>
-      </Card>
+        </div>
+        <NetWorthChart data={data} />
+      </div>
     </div>
   );
 }

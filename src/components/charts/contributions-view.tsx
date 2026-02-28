@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ContributionsChart } from './contributions-chart';
 import { ContributionsStats } from './contributions-stats';
 import { PeriodToggle } from './period-toggle';
@@ -24,15 +23,15 @@ export function ContributionsView({ snapshots }: ContributionsViewProps) {
   return (
     <div className="space-y-6">
       <ContributionsStats data={data} />
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Contributions vs. Gains</CardTitle>
+      <div className="animate-fade-up delay-3 rounded-xl border border-border bg-card p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="font-display text-lg text-foreground">
+            Contributions vs. Gains
+          </h3>
           <PeriodToggle value={period} onChange={setPeriod} />
-        </CardHeader>
-        <CardContent>
-          <ContributionsChart data={data} />
-        </CardContent>
-      </Card>
+        </div>
+        <ContributionsChart data={data} />
+      </div>
     </div>
   );
 }

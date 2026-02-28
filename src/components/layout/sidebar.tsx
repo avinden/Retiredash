@@ -6,7 +6,6 @@ import {
   BarChart3,
   Home,
   Landmark,
-  PiggyBank,
   Settings,
   TrendingUp,
 } from 'lucide-react';
@@ -35,15 +34,40 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="px-4 py-4">
-        <Link href="/" className="flex items-center gap-2">
-          <PiggyBank className="h-6 w-6 text-primary" />
-          <span className="text-lg font-semibold">RetireView</span>
+      <SidebarHeader className="px-4 py-5">
+        <Link href="/" className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-muted">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              className="text-emerald"
+            >
+              <path
+                d="M12 2L3 7v10l9 5 9-5V7l-9-5z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M12 22V12M3 7l9 5 9-5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <span className="font-display text-xl text-foreground">
+            RetireView
+          </span>
         </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs uppercase tracking-widest text-muted-foreground">
+            Navigation
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => (

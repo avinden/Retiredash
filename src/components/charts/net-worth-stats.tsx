@@ -1,9 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils/format';
 import type { PeriodSummary } from '@/lib/calculations';
 
@@ -30,41 +24,37 @@ export function NetWorthStats({ data }: NetWorthStatsProps) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-3">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Total Net Worth</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">
-            {formatCurrency(latest.totalBalance)}
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Period Change</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">
-            {change >= 0 ? '+' : ''}
-            {formatCurrency(change)}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {changePct >= 0 ? '+' : ''}
-            {changePct.toFixed(1)}%
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Total Contributions</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">
-            {formatCurrency(totalContributions)}
-          </p>
-        </CardContent>
-      </Card>
+      <div className="animate-fade-up card-hover rounded-xl border border-border bg-card p-5 delay-1">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          Total Net Worth
+        </p>
+        <p className="mt-2 text-2xl font-bold text-foreground">
+          {formatCurrency(latest.totalBalance)}
+        </p>
+      </div>
+      <div className="animate-fade-up card-hover rounded-xl border border-border bg-card p-5 delay-2">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          Period Change
+        </p>
+        <p
+          className={`mt-2 text-2xl font-bold ${change >= 0 ? 'text-emerald' : 'text-destructive'}`}
+        >
+          {change >= 0 ? '+' : ''}
+          {formatCurrency(change)}
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {changePct >= 0 ? '+' : ''}
+          {changePct.toFixed(1)}%
+        </p>
+      </div>
+      <div className="animate-fade-up card-hover rounded-xl border border-border bg-card p-5 delay-3">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          Total Contributions
+        </p>
+        <p className="mt-2 text-2xl font-bold text-foreground">
+          {formatCurrency(totalContributions)}
+        </p>
+      </div>
     </div>
   );
 }

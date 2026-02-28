@@ -1,9 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils/format';
 import type { PeriodSummary } from '@/lib/calculations';
 
@@ -22,26 +16,24 @@ export function ContributionsStats({ data }: ContributionsStatsProps) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Total Contributions</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">
-            {formatCurrency(totalContributions)}
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Total Gains</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">
-            {formatCurrency(totalGains)}
-          </p>
-        </CardContent>
-      </Card>
+      <div className="animate-fade-up card-hover rounded-xl border border-border bg-card p-5 delay-1">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          Total Contributions
+        </p>
+        <p className="mt-2 text-2xl font-bold text-foreground">
+          {formatCurrency(totalContributions)}
+        </p>
+      </div>
+      <div className="animate-fade-up card-hover rounded-xl border border-border bg-card p-5 delay-2">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          Total Gains
+        </p>
+        <p
+          className={`mt-2 text-2xl font-bold ${totalGains >= 0 ? 'text-emerald' : 'text-destructive'}`}
+        >
+          {formatCurrency(totalGains)}
+        </p>
+      </div>
     </div>
   );
 }
