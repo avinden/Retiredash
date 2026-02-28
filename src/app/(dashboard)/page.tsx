@@ -2,14 +2,17 @@ export const dynamic = 'force-dynamic';
 
 import { PageHeader } from '@/components/layout/page-header';
 import { RetirementHero } from '@/components/dashboard/retirement-hero';
+import { AccountBreakdown } from '@/components/dashboard/account-breakdown';
 import { DEFAULT_USER_ID } from '@/lib/constants';
 import { getRetirementSettings } from '@/lib/db/queries/retirement-settings';
 import { getLatestSnapshotPerAccount } from '@/lib/db/queries/snapshots';
+import { getAccounts } from '@/lib/db/queries/accounts';
 
 export default async function DashboardPage() {
-  const [settings, latestSnapshots] = await Promise.all([
+  const [settings, latestSnapshots, accounts] = await Promise.all([
     getRetirementSettings(DEFAULT_USER_ID),
     getLatestSnapshotPerAccount(DEFAULT_USER_ID),
+    getAccounts(DEFAULT_USER_ID),
   ]);
 
   return (
@@ -20,6 +23,10 @@ export default async function DashboardPage() {
       />
       <RetirementHero
         settings={settings}
+        latestSnapshots={latestSnapshots}
+      />
+      <AccountBreakdown
+        accounts={accounts}
         latestSnapshots={latestSnapshots}
       />
     </div>
