@@ -1,0 +1,46 @@
+import 'server-only';
+import { eq, and } from 'drizzle-orm';
+import { nanoid } from 'nanoid';
+import { db } from '@/lib/db';
+import { accounts } from '@/lib/db/schema';
+import type { Account } from '@/types';
+
+export async function getAccounts(userId: string): Promise<Account[]> {
+  return db
+    .select()
+    .from(accounts)
+    .where(
+      and(eq(accounts.userId, userId), eq(accounts.isActive, true)),
+    )
+    .all();
+}
+
+export async function getAccountById(id: string): Promise<Account | null> {
+  const rows = db.select().from(accounts).where(eq(accounts.id, id)).all();
+  return rows[0] ?? null;
+}
+
+export async function createAccount(
+  userId: string,
+  data: { name: string; type: string; institution: string },
+): Promise<Account | null> {
+  const id = nanoid();
+  db.insert(accounts)
+    .values({
+      id,
+      userId,
+      name: data.name,
+      type: data.type as 'checking' | 'savings' | 'investment' | 'retirement' | 'debt',
+      institution: data.institution,
+      createdAt: new Date().toISOString(),
+    })
+    .run();
+  return getAccountById(id);
+}
+
+export async function softDeleteAccount(id: string): Promise<void> {
+  db.update(accounts)
+    .set({ isActive: false })
+    .where(eq(accounts.id, id))
+    .run();
+}

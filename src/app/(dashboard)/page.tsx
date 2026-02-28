@@ -1,57 +1,27 @@
-import { PageHeader } from '@/components/layout/page-header';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+export const dynamic = 'force-dynamic';
 
-export default function DashboardPage() {
+import { PageHeader } from '@/components/layout/page-header';
+import { RetirementHero } from '@/components/dashboard/retirement-hero';
+import { DEFAULT_USER_ID } from '@/lib/constants';
+import { getRetirementSettings } from '@/lib/db/queries/retirement-settings';
+import { getLatestSnapshotPerAccount } from '@/lib/db/queries/snapshots';
+
+export default async function DashboardPage() {
+  const [settings, latestSnapshots] = await Promise.all([
+    getRetirementSettings(DEFAULT_USER_ID),
+    getLatestSnapshotPerAccount(DEFAULT_USER_ID),
+  ]);
+
   return (
-    <>
+    <div className="space-y-6">
       <PageHeader
-        title="Welcome to RetireView"
-        description="Your personal retirement readiness dashboard"
+        title="Dashboard"
+        description="Your retirement readiness at a glance."
       />
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Retirement Target</CardTitle>
-            <CardDescription>Based on your spending goals</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-muted-foreground">--</p>
-            <p className="text-sm text-muted-foreground">
-              Set up your goals in Settings
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Current Savings</CardTitle>
-            <CardDescription>Total across all accounts</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-muted-foreground">--</p>
-            <p className="text-sm text-muted-foreground">
-              Add accounts to get started
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Progress</CardTitle>
-            <CardDescription>How close you are to your goal</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-muted-foreground">--%</p>
-            <p className="text-sm text-muted-foreground">
-              Coming in Milestone 2
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    </>
+      <RetirementHero
+        settings={settings}
+        latestSnapshots={latestSnapshots}
+      />
+    </div>
   );
 }

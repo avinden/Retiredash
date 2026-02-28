@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   BarChart3,
   Home,
+  Landmark,
   PiggyBank,
   Settings,
   TrendingUp,
@@ -25,6 +26,7 @@ const navItems = [
   { title: 'Dashboard', href: '/', icon: Home },
   { title: 'Net Worth', href: '/net-worth', icon: TrendingUp },
   { title: 'Contributions', href: '/contributions', icon: BarChart3 },
+  { title: 'Accounts', href: '/accounts', icon: Landmark },
   { title: 'Settings', href: '/settings', icon: Settings },
 ];
 
