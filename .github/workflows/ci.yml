@@ -21,6 +21,11 @@ jobs:
 
       - run: npm ci
 
+      - name: Push DB schema
+        run: npm run db:push
+        env:
+          DATABASE_URL: file:./test.db
+
       - run: npm run lint
 
       - run: npm run typecheck
@@ -28,3 +33,22 @@ jobs:
       - run: npm run build
 
       - run: npm test
+
+      - name: Check file size limits
+        run: |
+          violations=0
+          while IFS= read -r f; do
+            lines=$(wc -l < "$f")
+            if [ "$lines" -gt 200 ]; then
+              echo "::error file=$f::Exceeds 200 line limit ($lines lines)"
+              violations=$((violations + 1))
+            fi
+          done < <(find src -name '*.ts' -o -name '*.tsx')
+          exit $violations
+
+      - name: No financial data in console.log
+        run: |
+          if grep -rn 'console\.log.*balance\|console\.log.*cents\|console\.log.*gains' src/; then
+            echo "::error::console.log of financial data detected"
+            exit 1
+          fi
