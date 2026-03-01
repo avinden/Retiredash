@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   BarChart3,
+  FileUp,
   Home,
   Landmark,
   Settings,
@@ -26,6 +27,7 @@ const navItems = [
   { title: 'Net Worth', href: '/net-worth', icon: TrendingUp },
   { title: 'Contributions', href: '/contributions', icon: BarChart3 },
   { title: 'Accounts', href: '/accounts', icon: Landmark },
+  { title: 'Imports', href: '/imports', icon: FileUp },
   { title: 'Settings', href: '/settings', icon: Settings },
 ];
 
