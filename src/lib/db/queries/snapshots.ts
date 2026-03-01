@@ -1,10 +1,10 @@
 import 'server-only';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { db } from '@/lib/db';
 import { snapshots } from '@/lib/db/schema';
 import { calculateGains } from '@/lib/calculations';
-import type { Snapshot } from '@/types';
+import type { Snapshot, SnapshotSource } from '@/types';
 
 export async function getSnapshotsByAccount(
   accountId: string,
@@ -52,6 +52,18 @@ export async function getLatestSnapshotPerAccount(
   return [...latest.values()];
 }
 
+export async function findDuplicateSnapshot(
+  accountId: string,
+  date: string,
+): Promise<Snapshot | null> {
+  const rows = db
+    .select()
+    .from(snapshots)
+    .where(and(eq(snapshots.accountId, accountId), eq(snapshots.date, date)))
+    .all();
+  return rows[0] ?? null;
+}
+
 export async function createSnapshot(
   userId: string,
   data: {
@@ -59,6 +71,7 @@ export async function createSnapshot(
     date: string;
     balance: number;
     contributions: number;
+    source?: SnapshotSource;
   },
 ): Promise<Snapshot | null> {
   const previous = await getLatestSnapshot(data.accountId);
@@ -76,7 +89,7 @@ export async function createSnapshot(
       balance: data.balance,
       contributions: data.contributions,
       gains,
-      source: 'manual',
+      source: data.source ?? 'manual',
     })
     .run();
 
