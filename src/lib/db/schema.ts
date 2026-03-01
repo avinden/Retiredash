@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, real, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const accounts = sqliteTable('accounts', {
   id: text('id').primaryKey(),
@@ -25,7 +25,9 @@ export const snapshots = sqliteTable('snapshots', {
   source: text('source', {
     enum: ['manual', 'pdf_import', 'copilot_mcp'],
   }).notNull(),
-});
+}, (table) => [
+  uniqueIndex('snapshots_account_date_idx').on(table.accountId, table.date),
+]);
 
 export const retirementSettings = sqliteTable('retirement_settings', {
   id: text('id').primaryKey(),
