@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -27,34 +27,58 @@ export function NetWorthChart({ data }: NetWorthChartProps) {
 
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+      <AreaChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
+        <defs>
+          <linearGradient id="netWorthGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-emerald)" stopOpacity={0.3} />
+            <stop offset="100%" stopColor="var(--color-emerald)" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke="var(--color-border)"
+          strokeOpacity={0.5}
+        />
         <XAxis
           dataKey="period"
-          className="text-xs"
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
+          axisLine={{ stroke: 'var(--color-border)' }}
+          tickLine={false}
         />
         <YAxis
-          className="text-xs"
-          tick={{ fontSize: 12 }}
-          tickFormatter={(v: number) => formatCompact(v)}
+          tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
+          tickFormatter={formatCompact}
+          axisLine={false}
+          tickLine={false}
         />
         <Tooltip
           formatter={(value: number | undefined) => [
             formatCurrency(value ?? 0),
             'Net Worth',
           ]}
-          labelFormatter={(label) => `Period: ${String(label)}`}
+          labelFormatter={(label) => String(label)}
+          contentStyle={{
+            background: 'var(--color-card)',
+            border: '1px solid var(--color-border)',
+            borderRadius: '0.5rem',
+            fontSize: '0.8125rem',
+          }}
         />
-        <Line
+        <Area
           type="monotone"
           dataKey="totalBalance"
-          stroke="var(--color-primary)"
-          strokeWidth={2}
-          dot={{ r: 4 }}
-          activeDot={{ r: 6 }}
+          stroke="var(--color-emerald)"
+          strokeWidth={2.5}
+          fill="url(#netWorthGradient)"
+          dot={{ r: 3, fill: 'var(--color-emerald)', strokeWidth: 0 }}
+          activeDot={{
+            r: 5,
+            fill: 'var(--color-emerald)',
+            strokeWidth: 2,
+            stroke: 'var(--color-card)',
+          }}
         />
-      </LineChart>
+      </AreaChart>
     </ResponsiveContainer>
   );
 }

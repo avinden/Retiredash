@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AccountBreakdownChart } from '@/components/charts/account-breakdown-chart';
 import type { Account, Snapshot } from '@/types';
 
@@ -29,13 +28,11 @@ export function AccountBreakdown({
   if (data.length === 0) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Account Breakdown</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <AccountBreakdownChart data={data} />
-      </CardContent>
-    </Card>
+    <div className="animate-fade-up delay-5 rounded-xl border border-border bg-card p-6">
+      <h3 className="mb-4 font-display text-lg text-foreground">
+        Account Breakdown
+      </h3>
+      <AccountBreakdownChart data={data} />
+    </div>
   );
 }

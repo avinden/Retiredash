@@ -1,9 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils/format';
 import {
   calculateRetirementTarget,
@@ -48,92 +42,170 @@ export function RetirementHero({
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardContent className="pt-6 text-center">
-          <p className="text-muted-foreground text-sm">
-            Retirement Target
-          </p>
-          <p className="text-4xl font-bold">{formatCurrency(target)}</p>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {formatCurrency(settings.annualSpendTarget)}/yr at{' '}
-            {(settings.withdrawalRate * 100).toFixed(1)}% withdrawal
-          </p>
-        </CardContent>
-      </Card>
+      {/* Hero ring section */}
+      <div className="animate-scale-in relative overflow-hidden rounded-2xl border border-border bg-card p-8">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-muted via-transparent to-gold-muted" />
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Current Savings</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              {formatCurrency(currentSavings)}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Progress</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{progressPct}%</p>
-            <div className="bg-secondary mt-2 h-2 rounded-full">
-              <div
-                className="bg-primary h-2 rounded-full transition-all"
-                style={{ width: `${progressPct}%` }}
-              />
+        <div className="relative flex flex-col items-center gap-6 md:flex-row md:justify-center md:gap-12">
+          <div className="relative flex-shrink-0">
+            <ProgressRing percentage={progressPct} size={200} />
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                Progress
+              </span>
+              <span className="font-display text-4xl text-foreground">
+                {progressPct}%
+              </span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Years to Retirement</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              {years > 0 ? years : 'Now!'}
+          <div className="text-center md:text-left">
+            <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+              Retirement Target
             </p>
-            <p className="text-muted-foreground text-sm">
-              Age {settings.currentAge} → {settings.targetRetirementAge}
+            <p className="font-display mt-1 text-5xl tracking-tight text-foreground">
+              {formatCurrency(target)}
             </p>
-          </CardContent>
-        </Card>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {formatCurrency(settings.annualSpendTarget)}/yr at{' '}
+              <span className="text-gold">
+                {(settings.withdrawalRate * 100).toFixed(1)}%
+              </span>{' '}
+              withdrawal rate
+            </p>
+          </div>
+        </div>
+      </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Monthly Contribution Needed</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              {progress >= 1
-                ? 'On track!'
-                : formatCurrency(monthlyNeeded)}
-            </p>
-            {progress < 1 && (
-              <p className="text-muted-foreground text-sm">
-                to reach your goal
-              </p>
-            )}
-          </CardContent>
-        </Card>
+      {/* Stats grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          label="Current Savings"
+          value={formatCurrency(currentSavings)}
+          delay="delay-1"
+        />
+        <StatCard
+          label="Gap to Target"
+          value={
+            progress >= 1
+              ? 'Reached!'
+              : formatCurrency(target - currentSavings)
+          }
+          sub={progress >= 1 ? undefined : 'remaining'}
+          accent={progress >= 1}
+          delay="delay-2"
+        />
+        <StatCard
+          label="Years to Retirement"
+          value={years > 0 ? String(years) : 'Now!'}
+          sub={`Age ${settings.currentAge} \u2192 ${settings.targetRetirementAge}`}
+          delay="delay-3"
+        />
+        <StatCard
+          label="Monthly Needed"
+          value={
+            progress >= 1 ? 'On track!' : formatCurrency(monthlyNeeded)
+          }
+          sub={progress >= 1 ? undefined : 'to reach your goal'}
+          accent={progress >= 1}
+          delay="delay-4"
+        />
       </div>
     </div>
   );
 }
 
+function StatCard({
+  label,
+  value,
+  sub,
+  accent,
+  delay,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  accent?: boolean;
+  delay: string;
+}) {
+  return (
+    <div
+      className={`animate-fade-up card-hover rounded-xl border border-border bg-card p-5 ${delay}`}
+    >
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
+      <p
+        className={`mt-2 text-2xl font-bold ${accent ? 'text-emerald' : 'text-foreground'}`}
+      >
+        {value}
+      </p>
+      {sub && (
+        <p className="mt-1 text-sm text-muted-foreground">{sub}</p>
+      )}
+    </div>
+  );
+}
+
+function ProgressRing({
+  percentage,
+  size,
+}: {
+  percentage: number;
+  size: number;
+}) {
+  const strokeWidth = 8;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percentage / 100) * circumference;
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      className="ring-glow -rotate-90"
+      style={
+        {
+          '--ring-circumference': circumference,
+          '--ring-offset': offset,
+        } as React.CSSProperties
+      }
+    >
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke="var(--color-muted)"
+        strokeWidth={strokeWidth}
+      />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke="var(--color-emerald)"
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeDasharray={circumference}
+        strokeDashoffset={circumference}
+        className="animate-draw-ring"
+      />
+    </svg>
+  );
+}
+
 function EmptyState() {
   return (
-    <Card>
-      <CardContent className="py-12 text-center">
-        <p className="text-lg font-medium">Am I on track to retire?</p>
-        <p className="text-muted-foreground mt-2">
-          Set your retirement goals in Settings and add your accounts to
-          find out.
-        </p>
-      </CardContent>
-    </Card>
+    <div className="animate-fade-up rounded-2xl border border-dashed border-border bg-card/50 p-16 text-center">
+      <p className="font-display text-3xl text-foreground">
+        Am I on track to retire?
+      </p>
+      <p className="mt-3 text-muted-foreground">
+        Set your retirement goals in{' '}
+        <span className="font-medium text-emerald">Settings</span> and
+        add your accounts to find out.
+      </p>
+    </div>
   );
 }

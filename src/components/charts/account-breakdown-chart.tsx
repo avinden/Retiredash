@@ -46,14 +46,18 @@ export function AccountBreakdownChart({ data }: AccountBreakdownChartProps) {
       >
         <XAxis
           type="number"
-          tick={{ fontSize: 12 }}
-          tickFormatter={(v: number) => formatCompact(v)}
+          tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
+          tickFormatter={formatCompact}
+          axisLine={{ stroke: 'var(--color-border)' }}
+          tickLine={false}
         />
         <YAxis
           type="category"
           dataKey="type"
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
           tickFormatter={capitalize}
+          axisLine={false}
+          tickLine={false}
         />
         <Tooltip
           formatter={(value: number | undefined) => [
@@ -61,8 +65,14 @@ export function AccountBreakdownChart({ data }: AccountBreakdownChartProps) {
             'Balance',
           ]}
           labelFormatter={(label) => capitalize(String(label))}
+          contentStyle={{
+            background: 'var(--color-card)',
+            border: '1px solid var(--color-border)',
+            borderRadius: '0.5rem',
+            fontSize: '0.8125rem',
+          }}
         />
-        <Bar dataKey="balance" radius={[0, 4, 4, 0]}>
+        <Bar dataKey="balance" radius={[0, 6, 6, 0]} opacity={0.9}>
           {data.map((entry) => (
             <Cell
               key={entry.type}
