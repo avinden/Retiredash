@@ -33,6 +33,9 @@ npm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# QA reports (local only)
+qa-reports/
+
 # OS
 .DS_Store
 Thumbs.db
