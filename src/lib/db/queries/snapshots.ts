@@ -62,8 +62,9 @@ export async function createSnapshot(
   },
 ): Promise<Snapshot | null> {
   const previous = await getLatestSnapshot(data.accountId);
-  const beginningBalance = previous ? previous.balance : 0;
-  const gains = calculateGains(data.balance, beginningBalance, data.contributions);
+  const gains = previous
+    ? calculateGains(data.balance, previous.balance, data.contributions)
+    : 0;
 
   const id = nanoid();
   db.insert(snapshots)
