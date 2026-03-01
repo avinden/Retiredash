@@ -1,0 +1,58 @@
+name: Claude Improve Rules
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  improve-rules:
+    if: |
+      github.event.label.name == 'claude-improve' &&
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude Improve Rules
+        id: claude-improve
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            You are reviewing merged PR #${{ github.event.pull_request.number }} to see if any review comments reveal a pattern worth codifying into project rules.
+
+            ## Instructions
+
+            1. Read all review comments on this PR using: gh pr view ${{ github.event.pull_request.number }} --json reviews,comments
+            2. Read the current CLAUDE.md at the repo root
+            3. Read docs/review-findings.md (create if missing)
+
+            4. Determine if any review comment reveals a recurring pattern that should become a project rule. Ask:
+               - Was this mistake something that could happen again?
+               - Is it specific enough to be actionable?
+               - Is it NOT already covered by existing CLAUDE.md rules?
+
+            5. If a new rule IS warranted:
+               - Create branch: claude/improve-rules-${{ github.event.pull_request.number }}
+               - Update CLAUDE.md with the new rule (keep total under 200 lines)
+               - Append finding to docs/review-findings.md with date, PR reference, and rationale
+               - Open a PR with title "chore: add rule from PR #${{ github.event.pull_request.number }} review"
+               - PR body should explain: what pattern was found, the proposed rule, and link to original PR
+
+            6. If NO new rule is warranted:
+               - Comment on the original PR: "Reviewed for rule improvements — no new patterns found worth codifying."
+
+            ## Rules for updating CLAUDE.md
+            - Keep under 200 lines total
+            - Add rules to the most relevant existing section
+            - Use the same terse style as existing rules
+            - One rule per line, no verbose explanations

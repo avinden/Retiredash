@@ -3,25 +3,13 @@ name: Claude Code Review
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
-    # Optional: Only run on specific file changes
-    # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
 
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write
       issues: read
       id-token: write
 
@@ -38,7 +26,29 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
           plugins: 'code-review@claude-code-plugins'
-          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
+          include_fix_links: true
+          prompt: |
+            /code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
 
+            ## RetireView Project Rules
+
+            ### REQUEST_CHANGES (blocking):
+            1. `any` type used — must use `unknown` + type guards
+            2. Files in `src/lib/calculations/` or `src/lib/parsers/` missing a co-located `.test.ts` file
+            3. Hardcoded secrets, API keys, or passwords in source code
+            4. `console.log` of financial data (balances, account numbers, amounts)
+            5. Money stored as floats instead of integer cents
+            6. Direct Supabase import outside `src/lib/db/queries/`
+
+            ### COMMENT (non-blocking):
+            - File exceeds 200 lines
+            - Function exceeds 30 lines
+            - Component has more than 5 props
+            - Missing explicit return types on exported functions
+            - Unnecessary `"use client"` directive
+            - Modifications to `src/components/ui/` (shadcn — should not be edited)
+
+            ### Financial correctness checks:
+            - Gains must be calculated as: ending_balance - beginning_balance - contributions
+            - Retirement target must be: annual_spend / withdrawal_rate (default 0.04)
+            - Money display must use `formatCurrency(cents)` only at the display layer, never store formatted strings
