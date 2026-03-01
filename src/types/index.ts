@@ -41,3 +41,35 @@ export type NewRetirementSettings = InferInsertModel<typeof retirementSettings>;
 
 export type ImportLog = InferSelectModel<typeof importLog>;
 export type NewImportLog = InferInsertModel<typeof importLog>;
+
+// PDF Import Pipeline Types
+export interface PdfExtraction {
+  filename: string;
+  text: string;
+  pageCount: number;
+  fileSizeBytes: number;
+}
+
+export interface ParsedSnapshot {
+  accountName: string;
+  accountId: string | null;
+  date: string;
+  balance: number;        // cents
+  contributions: number;  // cents
+  confidence: number;     // 0-1
+}
+
+export interface ParseResult {
+  importId: string;
+  filename: string;
+  parsedAt: string;
+  snapshots: ParsedSnapshot[];
+  rawResponse: string;
+}
+
+export interface ConfirmedSnapshot {
+  accountId: string;
+  date: string;
+  balance: number;
+  contributions: number;
+}
