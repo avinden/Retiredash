@@ -4,7 +4,7 @@ Personal retirement readiness dashboard — "Am I on track to retire?"
 
 ## Stack
 - Next.js 15 (App Router, TypeScript strict)
-- SQLite + Drizzle ORM (dev) → Supabase PostgreSQL (prod, M4)
+- Supabase PostgreSQL + Drizzle ORM (postgres-js driver)
 - Tailwind CSS + shadcn/ui
 - Recharts (charts)
 - Vitest (testing)
@@ -15,7 +15,7 @@ Personal retirement readiness dashboard — "Am I on track to retire?"
 - `npm run lint` — ESLint
 - `npm run typecheck` — TypeScript strict check
 - `npm test` — Vitest
-- `npm run db:push` — push Drizzle schema to SQLite
+- `npm run db:push` — push Drizzle schema to Supabase PostgreSQL
 - `npm run db:studio` — Drizzle Studio GUI
 
 ## File Organization

@@ -8,11 +8,10 @@ import type { RetirementSettings } from '@/types';
 export async function getRetirementSettings(
   userId: string,
 ): Promise<RetirementSettings | null> {
-  const rows = db
+  const rows = await db
     .select()
     .from(retirementSettings)
-    .where(eq(retirementSettings.userId, userId))
-    .all();
+    .where(eq(retirementSettings.userId, userId));
   return rows[0] ?? null;
 }
 
@@ -29,19 +28,17 @@ export async function upsertRetirementSettings(
   const now = new Date().toISOString();
 
   if (existing) {
-    db.update(retirementSettings)
+    await db.update(retirementSettings)
       .set({ ...data, updatedAt: now })
-      .where(eq(retirementSettings.id, existing.id))
-      .run();
+      .where(eq(retirementSettings.id, existing.id));
   } else {
-    db.insert(retirementSettings)
+    await db.insert(retirementSettings)
       .values({
         id: nanoid(),
         userId,
         ...data,
         updatedAt: now,
-      })
-      .run();
+      });
   }
 
   return getRetirementSettings(userId);

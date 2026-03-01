@@ -11,12 +11,11 @@ export async function getAccounts(userId: string): Promise<Account[]> {
     .from(accounts)
     .where(
       and(eq(accounts.userId, userId), eq(accounts.isActive, true)),
-    )
-    .all();
+    );
 }
 
 export async function getAccountById(id: string): Promise<Account | null> {
-  const rows = db.select().from(accounts).where(eq(accounts.id, id)).all();
+  const rows = await db.select().from(accounts).where(eq(accounts.id, id));
   return rows[0] ?? null;
 }
 
@@ -25,7 +24,7 @@ export async function createAccount(
   data: { name: string; type: string; institution: string },
 ): Promise<Account | null> {
   const id = nanoid();
-  db.insert(accounts)
+  await db.insert(accounts)
     .values({
       id,
       userId,
@@ -33,14 +32,12 @@ export async function createAccount(
       type: data.type as 'checking' | 'savings' | 'investment' | 'retirement' | 'debt',
       institution: data.institution,
       createdAt: new Date().toISOString(),
-    })
-    .run();
+    });
   return getAccountById(id);
 }
 
 export async function softDeleteAccount(id: string): Promise<void> {
-  db.update(accounts)
+  await db.update(accounts)
     .set({ isActive: false })
-    .where(eq(accounts.id, id))
-    .run();
+    .where(eq(accounts.id, id));
 }

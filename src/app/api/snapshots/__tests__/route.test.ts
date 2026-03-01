@@ -70,9 +70,11 @@ describe('POST /api/snapshots', () => {
 
   it('returns 409 for duplicate snapshot (same accountId + date)', async () => {
     mockGetAccountById.mockResolvedValue({ id: 'acc-123' });
-    mockCreateSnapshot.mockRejectedValue(
-      new Error('UNIQUE constraint failed: snapshots.account_id, snapshots.date'),
+    const pgError = Object.assign(
+      new Error('duplicate key value violates unique constraint'),
+      { code: '23505' },
     );
+    mockCreateSnapshot.mockRejectedValue(pgError);
     const res = await POST(makeRequest(validBody));
     expect(res.status).toBe(409);
     const json = await res.json();
