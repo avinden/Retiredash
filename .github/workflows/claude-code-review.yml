@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
@@ -24,6 +24,8 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          use_sticky_comment: true
           plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
           plugins: 'code-review@claude-code-plugins'
           include_fix_links: true
@@ -52,3 +54,4 @@ jobs:
             - Gains must be calculated as: ending_balance - beginning_balance - contributions
             - Retirement target must be: annual_spend / withdrawal_rate (default 0.04)
             - Money display must use `formatCurrency(cents)` only at the display layer, never store formatted strings
+          claude_args: '--max-turns 25'
