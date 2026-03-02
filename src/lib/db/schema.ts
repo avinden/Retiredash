@@ -1,6 +1,13 @@
-import { sqliteTable, text, integer, real, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import {
+  pgTable,
+  text,
+  integer,
+  boolean,
+  doublePrecision,
+  uniqueIndex,
+} from 'drizzle-orm/pg-core';
 
-export const accounts = sqliteTable('accounts', {
+export const accounts = pgTable('accounts', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull(),
   name: text('name').notNull(),
@@ -8,11 +15,11 @@ export const accounts = sqliteTable('accounts', {
     enum: ['checking', 'savings', 'investment', 'retirement', 'debt'],
   }).notNull(),
   institution: text('institution').notNull(),
-  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+  isActive: boolean('is_active').notNull().default(true),
   createdAt: text('created_at').notNull(),
 });
 
-export const snapshots = sqliteTable('snapshots', {
+export const snapshots = pgTable('snapshots', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull(),
   accountId: text('account_id')
@@ -29,17 +36,17 @@ export const snapshots = sqliteTable('snapshots', {
   uniqueIndex('snapshots_account_date_idx').on(table.accountId, table.date),
 ]);
 
-export const retirementSettings = sqliteTable('retirement_settings', {
+export const retirementSettings = pgTable('retirement_settings', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull(),
   annualSpendTarget: integer('annual_spend_target').notNull(),
-  withdrawalRate: real('withdrawal_rate').notNull().default(0.04),
+  withdrawalRate: doublePrecision('withdrawal_rate').notNull().default(0.04),
   targetRetirementAge: integer('target_retirement_age').notNull(),
   currentAge: integer('current_age').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
 
-export const importLog = sqliteTable('import_log', {
+export const importLog = pgTable('import_log', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull(),
   source: text('source').notNull(),

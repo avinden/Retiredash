@@ -7,40 +7,51 @@ vi.mock('server-only', () => ({}));
 // Mock nanoid
 vi.mock('nanoid', () => ({ nanoid: () => 'test-id-123' }));
 
-// Mock DB module
-const mockAll = vi.fn();
-const mockRun = vi.fn();
+// Queue of results returned when a query chain is awaited
+const resultQueue: unknown[] = [];
 
-vi.mock('@/lib/db', () => ({
-  db: {
-    select: () => ({
-      from: () => ({
-        where: () => ({
-          orderBy: () => ({
-            limit: () => ({ all: mockAll }),
-            all: mockAll,
-          }),
-          all: mockAll,
-        }),
-      }),
-    }),
-    insert: () => ({
-      values: () => ({ run: mockRun }),
-    }),
-  },
-}));
+vi.mock('@/lib/db', () => {
+  // Every chain method returns the chain; awaiting resolves the next queued result
+  function makeChain(): Record<string, unknown> {
+    const chain: Record<string, unknown> = {};
+    const self = (): Record<string, unknown> => chain;
+    chain.from = self;
+    chain.where = self;
+    chain.orderBy = self;
+    chain.limit = self;
+    chain.values = self;
+    chain.set = self;
+    chain.then = (
+      resolve: (v: unknown) => unknown,
+      reject?: (e: unknown) => unknown,
+    ) => {
+      const value = resultQueue.shift();
+      return Promise.resolve(value).then(resolve, reject);
+    };
+    return chain;
+  }
+
+  return {
+    db: {
+      select: () => makeChain(),
+      insert: () => makeChain(),
+      update: () => makeChain(),
+    },
+  };
+});
 
 describe('createSnapshot', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resultQueue.length = 0;
   });
 
   it('sets gains to 0 for first snapshot (no previous)', async () => {
-    // First call: getLatestSnapshot returns empty (no previous)
-    // Second call: select after insert returns the created row
-    mockAll
-      .mockReturnValueOnce([]) // getLatestSnapshot → no previous
-      .mockReturnValueOnce([
+    // Queue: getLatestSnapshot → empty, insert → void, select-by-id → row
+    resultQueue.push(
+      [], // getLatestSnapshot → no previous
+      undefined, // insert
+      [
         {
           id: 'test-id-123',
           userId: 'user-1',
@@ -51,7 +62,8 @@ describe('createSnapshot', () => {
           gains: 0,
           source: 'manual',
         },
-      ]);
+      ],
+    );
 
     const { createSnapshot } = await import('../snapshots');
     const result = await createSnapshot('user-1', {
@@ -62,9 +74,6 @@ describe('createSnapshot', () => {
     });
 
     expect(result).not.toBeNull();
-    // Verify gains=0 was passed to insert
-    const insertCall = mockRun.mock.calls[0];
-    expect(insertCall).toBeDefined();
     expect(result?.gains).toBe(0);
   });
 
@@ -78,8 +87,8 @@ describe('createSnapshot', () => {
       contributions,
     ); // 120000 - 100000 - 5000 = 15000
 
-    mockAll
-      .mockReturnValueOnce([
+    resultQueue.push(
+      [
         {
           id: 'prev-id',
           userId: 'user-1',
@@ -90,8 +99,9 @@ describe('createSnapshot', () => {
           gains: 0,
           source: 'manual',
         },
-      ]) // getLatestSnapshot → has previous
-      .mockReturnValueOnce([
+      ], // getLatestSnapshot → has previous
+      undefined, // insert
+      [
         {
           id: 'test-id-123',
           userId: 'user-1',
@@ -102,7 +112,8 @@ describe('createSnapshot', () => {
           gains: expectedGains,
           source: 'manual',
         },
-      ]);
+      ],
+    );
 
     // Re-import to get fresh module with new mocks
     vi.resetModules();

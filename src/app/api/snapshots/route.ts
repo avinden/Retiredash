@@ -64,8 +64,8 @@ function isValidSnapshotBody(
 }
 
 function isUniqueConstraintError(err: unknown): boolean {
-  if (err instanceof Error) {
-    return err.message.includes('UNIQUE constraint failed');
+  if (typeof err === 'object' && err !== null && 'code' in err) {
+    return (err as { code: string }).code === '23505';
   }
   return false;
 }

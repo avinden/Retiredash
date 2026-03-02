@@ -13,8 +13,7 @@ export async function getSnapshotsByAccount(
     .select()
     .from(snapshots)
     .where(eq(snapshots.accountId, accountId))
-    .orderBy(desc(snapshots.date))
-    .all();
+    .orderBy(desc(snapshots.date));
 }
 
 export async function getAllSnapshots(userId: string): Promise<Snapshot[]> {
@@ -22,20 +21,18 @@ export async function getAllSnapshots(userId: string): Promise<Snapshot[]> {
     .select()
     .from(snapshots)
     .where(eq(snapshots.userId, userId))
-    .orderBy(desc(snapshots.date))
-    .all();
+    .orderBy(desc(snapshots.date));
 }
 
 export async function getLatestSnapshot(
   accountId: string,
 ): Promise<Snapshot | null> {
-  const rows = db
+  const rows = await db
     .select()
     .from(snapshots)
     .where(eq(snapshots.accountId, accountId))
     .orderBy(desc(snapshots.date))
-    .limit(1)
-    .all();
+    .limit(1);
   return rows[0] ?? null;
 }
 
@@ -56,11 +53,10 @@ export async function findDuplicateSnapshot(
   accountId: string,
   date: string,
 ): Promise<Snapshot | null> {
-  const rows = db
+  const rows = await db
     .select()
     .from(snapshots)
-    .where(and(eq(snapshots.accountId, accountId), eq(snapshots.date, date)))
-    .all();
+    .where(and(eq(snapshots.accountId, accountId), eq(snapshots.date, date)));
   return rows[0] ?? null;
 }
 
@@ -80,7 +76,7 @@ export async function createSnapshot(
     : 0;
 
   const id = nanoid();
-  db.insert(snapshots)
+  await db.insert(snapshots)
     .values({
       id,
       userId,
@@ -90,9 +86,8 @@ export async function createSnapshot(
       contributions: data.contributions,
       gains,
       source: data.source ?? 'manual',
-    })
-    .run();
+    });
 
-  const rows = db.select().from(snapshots).where(eq(snapshots.id, id)).all();
+  const rows = await db.select().from(snapshots).where(eq(snapshots.id, id));
   return rows[0] ?? null;
 }

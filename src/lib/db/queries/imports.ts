@@ -8,19 +8,17 @@ export async function getImportHistory(): Promise<ImportLog[]> {
   return db
     .select()
     .from(importLog)
-    .orderBy(desc(importLog.importedAt))
-    .all();
+    .orderBy(desc(importLog.importedAt));
 }
 
 export async function createImportEntry(
   data: NewImportLog,
 ): Promise<ImportLog | null> {
-  db.insert(importLog).values(data).run();
-  const rows = db
+  await db.insert(importLog).values(data);
+  const rows = await db
     .select()
     .from(importLog)
-    .where(eq(importLog.id, data.id))
-    .all();
+    .where(eq(importLog.id, data.id));
   return rows[0] ?? null;
 }
 
@@ -33,5 +31,5 @@ export async function updateImportStatus(
   if (recordCount !== undefined) {
     updates.recordsCreated = recordCount;
   }
-  db.update(importLog).set(updates).where(eq(importLog.id, id)).run();
+  await db.update(importLog).set(updates).where(eq(importLog.id, id));
 }
